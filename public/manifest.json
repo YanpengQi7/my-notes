@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "我的笔记",
+  "name": "我的笔记应用",
+  "description": "一个简洁优雅的笔记应用",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,7 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#007AFF",
+  "background_color": "#ffffff",
+  "orientation": "portrait"
 }
