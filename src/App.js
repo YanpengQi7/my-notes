@@ -21,32 +21,6 @@ function App() {
   // 检查是否为演示模式
   const isDemoMode = process.env.REACT_APP_SUPABASE_URL === 'your-supabase-project-url';
 
-  // 获取用户笔记
-  const fetchNotes = useCallback(async () => {
-    if (!user) return;
-    
-    try {
-      // 检查是否为演示模式
-      if (process.env.REACT_APP_SUPABASE_URL === 'your-supabase-project-url') {
-        // 演示模式：从本地存储加载
-        const localNotes = JSON.parse(localStorage.getItem('demo-notes') || '[]');
-        setNotes(localNotes);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('notes')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('updated_at', { ascending: false });
-      
-      if (error) throw error;
-      setNotes(data || []);
-    } catch (error) {
-      console.error('获取笔记失败:', error);
-    }
-  }, [user]);
-
   // 监听用户状态
   useEffect(() => {
     // 检查是否为演示模式
