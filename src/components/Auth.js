@@ -83,6 +83,7 @@ const Auth = ({ onAuthSuccess }) => {
           </button>
         </form>
         
+        {/* 暂时禁用 Google 登录
         <div className="divider">
           <span>或</span>
         </div>
@@ -96,6 +97,7 @@ const Auth = ({ onAuthSuccess }) => {
           </svg>
           使用 Google 登录
         </button>
+        */}
         
         <p className="auth-switch">
           {isLogin ? '还没有账号？' : '已有账号？'}
