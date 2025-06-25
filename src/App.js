@@ -32,6 +32,8 @@ function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setUser(session?.user ?? null);
+        setLoading(false);
+        
         if (session?.user) {
           // 直接调用 fetchNotes，不依赖它
           try {
@@ -142,7 +144,14 @@ function App() {
   );
 
   if (loading) {
-    return <div className="loading">加载中...</div>;
+    return (
+      <div className="loading">
+        <div>加载中...</div>
+        <div style={{ fontSize: '12px', marginTop: '10px', color: '#666' }}>
+          正在检查用户登录状态...
+        </div>
+      </div>
+    );
   }
 
   if (!user) {
