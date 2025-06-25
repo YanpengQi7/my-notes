@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from './supabaseClient';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Auth from './components/Auth';
 import ConfirmDialog from './components/ConfirmDialog';
-import DemoNotice from './components/DemoNotice';
 import './App.css';
 
 function App() {
@@ -18,24 +17,8 @@ function App() {
   const [editorContent, setEditorContent] = useState('');
   const quillRef = useRef(null);
 
-  // 检查是否为演示模式
-  const isDemoMode = process.env.REACT_APP_SUPABASE_URL === 'your-supabase-project-url';
-
   // 监听用户状态
   useEffect(() => {
-    // 检查是否为演示模式
-    if (process.env.REACT_APP_SUPABASE_URL === 'your-supabase-project-url') {
-      // 演示模式：检查本地存储中是否有用户信息
-      const demoUser = localStorage.getItem('demo-user');
-      if (demoUser) {
-        setUser(JSON.parse(demoUser));
-        setLoading(false);
-        return;
-      }
-      setLoading(false);
-      return;
-    }
-
     // 获取当前用户
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -93,17 +76,6 @@ function App() {
         updated_at: new Date().toISOString()
       };
 
-      // 检查是否为演示模式
-      if (process.env.REACT_APP_SUPABASE_URL === 'your-supabase-project-url') {
-        // 演示模式：使用本地存储
-        const localNotes = JSON.parse(localStorage.getItem('demo-notes') || '[]');
-        localNotes.unshift(newNote);
-        localStorage.setItem('demo-notes', JSON.stringify(localNotes));
-        setNotes([newNote, ...notes]);
-        setCurrentNote(newNote);
-        return;
-      }
-
       const { data, error } = await supabase
         .from('notes')
         .insert([newNote])
@@ -122,20 +94,6 @@ function App() {
   // 更新笔记
   const updateNote = async (id, updates) => {
     try {
-      // 检查是否为演示模式
-      if (process.env.REACT_APP_SUPABASE_URL === 'your-supabase-project-url') {
-        // 演示模式：使用本地存储
-        const localNotes = JSON.parse(localStorage.getItem('demo-notes') || '[]');
-        const updatedNotes = localNotes.map(note => 
-          note.id === id ? { ...note, ...updates, updated_at: new Date().toISOString() } : note
-        );
-        localStorage.setItem('demo-notes', JSON.stringify(updatedNotes));
-        setNotes(notes.map(note => 
-          note.id === id ? { ...note, ...updates } : note
-        ));
-        return;
-      }
-
       const { error } = await supabase
         .from('notes')
         .update({ ...updates, updated_at: new Date().toISOString() })
@@ -154,19 +112,6 @@ function App() {
   // 删除笔记
   const deleteNote = async (id) => {
     try {
-      // 检查是否为演示模式
-      if (process.env.REACT_APP_SUPABASE_URL === 'your-supabase-project-url') {
-        // 演示模式：使用本地存储
-        const localNotes = JSON.parse(localStorage.getItem('demo-notes') || '[]');
-        const filteredNotes = localNotes.filter(note => note.id !== id);
-        localStorage.setItem('demo-notes', JSON.stringify(filteredNotes));
-        setNotes(notes.filter(note => note.id !== id));
-        if (currentNote && currentNote.id === id) {
-          setCurrentNote(null);
-        }
-        return;
-      }
-
       const { error } = await supabase
         .from('notes')
         .delete()
@@ -186,17 +131,6 @@ function App() {
   // 退出登录
   const handleLogout = async () => {
     try {
-      // 检查是否为演示模式
-      if (process.env.REACT_APP_SUPABASE_URL === 'your-supabase-project-url') {
-        // 演示模式：清除本地存储
-        localStorage.removeItem('demo-user');
-        localStorage.removeItem('demo-notes');
-        setUser(null);
-        setNotes([]);
-        setCurrentNote(null);
-        return;
-      }
-
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (error) {
@@ -216,18 +150,12 @@ function App() {
 
   if (!user) {
     return <Auth onAuthSuccess={(user) => {
-      // 检查是否为演示模式
-      if (process.env.REACT_APP_SUPABASE_URL === 'your-supabase-project-url') {
-        // 演示模式：保存用户信息到本地存储
-        localStorage.setItem('demo-user', JSON.stringify(user));
-        setUser(user);
-      }
+      setUser(user);
     }} />;
   }
 
   return (
     <div className="App">
-      {isDemoMode && <DemoNotice />}
       <div className="sidebar">
         <div className="sidebar-header">
           <h1>我的笔记</h1>
