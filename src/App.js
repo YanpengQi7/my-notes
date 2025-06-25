@@ -68,12 +68,9 @@ function App() {
     
     try {
       const newNote = {
-        id: Date.now().toString(), // 使用时间戳作为临时ID
         title: '新笔记',
         content: '',
-        user_id: user.id,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        user_id: user.id
       };
 
       const { data, error } = await supabase
