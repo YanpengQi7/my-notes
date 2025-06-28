@@ -36,17 +36,6 @@ const Auth = ({ onAuthSuccess }) => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-      });
-      if (error) throw error;
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
   return (
     <div className="auth-container">
       <div className="auth-card">
