@@ -212,7 +212,7 @@ function App() {
         <div className="sidebar-header">
           <h1>📝 智能笔记</h1>
           <div className="user-info">
-            <span>{user.email}</span>
+            <span>{user?.email || ''}</span>
             <button 
               className="logout-btn"
               onClick={handleLogout}
