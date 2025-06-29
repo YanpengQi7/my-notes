@@ -1,43 +1,41 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // 免费的 Google Gemini API 配置
-// 你可以在 https://makersuite.google.com/app/apikey 获取免费 API Key
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'demo-key');
+// 你可以在 https://aistudio.google.com/ 获取免费 API Key
+// 注意：在函数内动态实例化以确保环境变量正确加载
 
 async function generateWithGemini(content, type) {
   try {
-    // 调试信息
-    console.log('🔍 Gemini API Key 检查:', process.env.GEMINI_API_KEY ? '已配置' : '未配置');
-    console.log('🔍 API Key 长度:', process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.length : 0);
-    
     // 如果没有配置 API Key，使用智能备用响应
-    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'demo-key') {
-      console.log('Gemini API Key 未配置，使用智能备用响应');
+    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'your_gemini_api_key_here') {
+      console.log('🔄 使用智能备用系统 - 如需真正的AI响应，请配置有效的GEMINI_API_KEY');
       return generateSmartFallback(content, type);
     }
 
+    console.log('🤖 正在调用 Google Gemini API...');
+    console.log('🔑 使用的API Key:', process.env.GEMINI_API_KEY);
+
+    // 动态实例化以确保使用最新的环境变量
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // 根据类型构建提示词
     let prompt = '';
     switch (type) {
       case 'summary':
-        prompt = `请为以下内容生成一个简洁的摘要（200字以内）：\n\n${content}`;
+        prompt = `请为以下内容生成一个简洁的摘要（50字以内）：\n\n${content}`;
         break;
       case 'keywords':
-        prompt = `请从以下内容中提取5-10个最重要的关键词，用逗号分隔：\n\n${content}`;
+        prompt = `请从以下内容中提取5-8个关键词，用逗号分隔：\n\n${content}`;
         break;
       case 'advice':
-        prompt = `请分析以下内容的写作质量并提供改进建议：\n\n${content}`;
+        prompt = `基于以下内容，给出3条实用的学习建议：\n\n${content}`;
         break;
-      case 'tags':
-        prompt = `请为以下内容生成3-5个合适的标签：\n\n${content}`;
-        break;
-      case 'topics':
-        prompt = `基于以下内容，建议3-5个相关的主题或研究方向：\n\n${content}`;
+      case 'expand':
+        prompt = `请扩展以下内容，添加更多相关信息和细节：\n\n${content}`;
         break;
       default:
-        prompt = content;
+        prompt = `请分析以下内容并提供有用的见解：\n\n${content}`;
     }
 
     const result = await model.generateContent(prompt);
@@ -46,83 +44,66 @@ async function generateWithGemini(content, type) {
 
     return {
       success: true,
-      response: text,
-      provider: 'gemini',
-      model: 'gemini-1.5-flash'
+      result: text,
+      source: 'Google Gemini AI',
+      type: type
     };
 
   } catch (error) {
-    console.error('Gemini API 错误:', error.message);
-    
+    console.log('Gemini API 错误:', error.message);
     // API 失败时使用智能备用响应
     return generateSmartFallback(content, type);
   }
 }
 
+// 智能备用响应函数
 function generateSmartFallback(content, type) {
-  // 智能备用响应 - 基于内容分析
-  const contentWords = content.split(/\s+/).length;
-  const contentPreview = content.substring(0, 150);
-  const chineseWords = content.match(/[\u4e00-\u9fa5]{2,}/g) || [];
   
-  const fallbackResponses = {
-    summary: `📝 智能摘要（${contentWords}词）：\n\n${contentPreview}${content.length > 150 ? '...' : ''}\n\n🔍 内容特点：\n• 长度：${contentWords}词\n• 密度：${contentWords > 100 ? '内容丰富' : '简洁明了'}\n• 建议：${contentWords > 200 ? '可适当精简' : '可进一步扩展'}`,
-    
-    keywords: `🏷️ 关键词提取：\n${chineseWords.slice(0, 8).join(', ')}\n\n💡 补充概念：学习笔记, 知识管理, 效率工具`,
-    
-    advice: `✍️ 写作分析：\n• 字数统计：${contentWords}词 ${contentWords > 100 ? '(详细)' : '(简洁)'}\n• 结构建议：${contentWords > 50 ? '注意段落层次' : '可增加更多细节'}\n• 表达优化：${content.includes('？') ? '问题引导良好' : '可适当增加疑问'}\n• 可读性：${content.includes('、') ? '列举清晰' : '建议使用列举'}`,
-    
-    tags: `🏷️ 推荐标签：${content.length > 100 ? '详细记录' : '简要笔记'}, ${content.includes('学习') ? '学习心得' : '知识整理'}, ${content.includes('问题') ? '问题解决' : '思考总结'}`,
-    
-    topics: `🎯 相关主题：\n• ${content.includes('学习') ? '学习方法论' : '知识管理'}\n• ${content.includes('技术') ? '技术深度学习' : '概念理解'}\n• ${contentWords > 100 ? '复杂问题简化' : '概念深度扩展'}\n• 个人知识体系建设`
-  };
-
-  return {
-    success: true,
-    response: fallbackResponses[type] || '智能分析功能暂时不可用，请稍后重试。',
-    provider: 'smart-fallback',
-    model: 'local-analysis'
-  };
+  switch (type) {
+    case 'summary':
+      return {
+        success: true,
+        result: `📝 ${content.length > 100 ? content.substring(0, 100) + '...' : content}`,
+        source: '智能备用系统',
+        type: 'summary'
+      };
+      
+    case 'keywords':
+      // 简单的关键词提取逻辑
+      const words = content.split(/[\s，。！？；：、]+/)
+        .filter(word => word.length > 1)
+        .slice(0, 6);
+      return {
+        success: true,
+        result: words.join(', '),
+        source: '智能备用系统',
+        type: 'keywords'
+      };
+      
+    case 'advice':
+      return {
+        success: true,
+        result: '1. 定期复习和总结学习内容\n2. 结合实际案例加深理解\n3. 与他人交流分享学习心得',
+        source: '智能备用系统',
+        type: 'advice'
+      };
+      
+    case 'expand':
+      return {
+        success: true,
+        result: `${content}\n\n💡 建议深入了解相关概念，通过实践加强理解，并关注最新发展动态。`,
+        source: '智能备用系统',
+        type: 'expand'
+      };
+      
+    default:
+      return {
+        success: true,
+        result: `内容分析：这是一段关于${content.substring(0, 20)}...的内容，建议进一步学习和实践。`,
+        source: '智能备用系统',
+        type: type
+      };
+  }
 }
 
-// Vercel API 端点
-export default async function handler(req, res) {
-  // 添加 CORS 支持
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: '只支持 POST 请求' });
-  }
-
-  try {
-    const { content, type } = req.body;
-
-    if (!content || content.trim().length === 0) {
-      return res.status(400).json({ error: '内容不能为空' });
-    }
-
-    const result = await generateWithGemini(content, type);
-
-    res.status(200).json({
-      response: result.response,
-      type: type,
-      provider: result.provider,
-      model: result.model,
-      timestamp: new Date().toISOString()
-    });
-
-  } catch (error) {
-    console.error('Gemini API 总体错误:', error);
-    
-    res.status(500).json({
-      error: 'AI 服务暂时不可用，请稍后重试',
-      timestamp: new Date().toISOString()
-    });
-  }
-} 
+module.exports = generateWithGemini;

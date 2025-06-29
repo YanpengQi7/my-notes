@@ -1,18 +1,17 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://demo.supabase.co';
-const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'demo-key';
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
-// 检查是否为演示模式
-const isDemoMode = process.env.REACT_APP_DEMO_MODE === 'true' || !supabaseUrl || supabaseUrl === 'your_supabase_url_here';
-
-if (!isDemoMode && (!supabaseUrl || !supabaseKey || supabaseUrl === 'your_supabase_url_here')) {
-  console.warn('Supabase 配置缺失！将使用演示模式。请设置 REACT_APP_SUPABASE_URL 和 REACT_APP_SUPABASE_ANON_KEY 环境变量。');
+// 验证Supabase配置
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Supabase配置缺失');
+  console.log('请在.env文件中设置以下环境变量:');
+  console.log('REACT_APP_SUPABASE_URL=your_supabase_url');
+  console.log('REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key');
+  throw new Error('Supabase配置缺失，请检查环境变量设置');
 }
 
-// 创建Supabase客户端（在演示模式下使用虚拟配置）
-const supabase = isDemoMode 
-  ? null 
-  : createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-export { supabase, isDemoMode }; 
+export { supabase }; 

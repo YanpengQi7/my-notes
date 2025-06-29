@@ -1,53 +1,60 @@
-/* 全局样式 */
+/* 苹果风格主应用样式 */
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #fbfbfd;
+  background: linear-gradient(180deg, #f5f5f7 0%, #fafafa 100%);
   color: #1d1d1f;
   line-height: 1.47059;
   font-weight: 400;
   letter-spacing: -0.022em;
+  min-height: 100vh;
 }
 
 .App {
   display: flex;
   height: 100vh;
-  background: #fbfbfd;
+  background: linear-gradient(180deg, #f5f5f7 0%, #fafafa 100%);
   position: relative;
 }
 
-/* 侧边栏样式 */
+/* 苹果风格侧边栏 */
 .sidebar {
   width: 320px;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-right: 0.5px solid rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.04);
   position: relative;
-  z-index: 1;
+  z-index: 10;
 }
 
 .sidebar-header {
-  padding: 24px 20px 20px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.9);
+  padding: 20px 20px 16px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
 
 .sidebar-header h1 {
   margin: 0 0 16px 0;
   font-size: 28px;
-  font-weight: 600;
+  font-weight: 700;
   color: #1d1d1f;
-  letter-spacing: -0.003em;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .user-info {
@@ -56,111 +63,132 @@ body {
   align-items: center;
   margin-bottom: 16px;
   padding: 12px 16px;
-  background: rgba(0, 122, 255, 0.1);
-  border-radius: 8px;
+  background: rgba(0, 122, 255, 0.08);
+  border-radius: 12px;
   font-size: 14px;
-  border: 1px solid rgba(0, 122, 255, 0.2);
+  border: 0.5px solid rgba(0, 122, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .user-info span {
-  color: #007aff;
-  font-weight: 500;
+  color: #007AFF;
+  font-weight: 600;
+  font-size: 15px;
 }
 
 .logout-btn {
   padding: 6px 12px;
-  background: rgba(255, 59, 48, 0.1);
-  color: #ff3b30;
-  border: 1px solid rgba(255, 59, 48, 0.2);
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
+  background: rgba(255, 59, 48, 0.08);
+  color: #FF3B30;
+  border: 0.5px solid rgba(255, 59, 48, 0.12);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .logout-btn:hover {
-  background: rgba(255, 59, 48, 0.15);
-  border-color: rgba(255, 59, 48, 0.3);
+  background: rgba(255, 59, 48, 0.12);
+  border-color: rgba(255, 59, 48, 0.2);
+  transform: translateY(-1px);
 }
 
 .new-note-btn {
   width: 100%;
-  padding: 12px 16px;
-  background: #007aff;
+  padding: 14px 16px;
+  background: #007AFF;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 500;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   letter-spacing: -0.022em;
+  box-shadow: 0 1px 3px rgba(0, 122, 255, 0.12), 0 1px 2px rgba(0, 122, 255, 0.24);
 }
 
 .new-note-btn:hover {
-  background: #0056d6;
+  background: #0056CC;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15), 0 2px 6px rgba(0, 122, 255, 0.3);
+}
+
+.new-note-btn:active {
   transform: translateY(-1px);
 }
 
 .search-box {
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.04);
   background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .search-box input {
   width: 100%;
-  padding: 10px 14px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 12px 16px;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  font-size: 16px;
   outline: none;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   background: rgba(255, 255, 255, 0.8);
   color: #1d1d1f;
+  font-weight: 400;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .search-box input:focus {
-  border-color: #007aff;
-  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+  border-color: #007AFF;
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.16);
   background: rgba(255, 255, 255, 1);
 }
 
 .search-box input::placeholder {
-  color: #86868b;
+  color: #86868B;
   font-weight: 400;
 }
 
 .notes-list {
   flex: 1;
   overflow-y: auto;
-  padding: 12px 0;
-  background: rgba(255, 255, 255, 0.3);
+  padding: 8px 0;
+  background: transparent;
 }
 
 .note-item {
   padding: 16px 20px;
-  margin: 0 12px 8px;
+  margin: 0 12px 6px;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.6);
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .note-item:hover {
-  background: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.9);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.06);
 }
 
 .note-item.active {
-  background: #007aff;
+  background: #007AFF;
   color: white;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.16), 0 2px 8px rgba(0, 122, 255, 0.24);
+  border-color: transparent;
 }
 
 .note-item.active .note-title {
@@ -175,14 +203,14 @@ body {
   font-weight: 600;
   color: #1d1d1f;
   margin-bottom: 6px;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.3;
   letter-spacing: -0.022em;
 }
 
 .note-preview {
-  color: #86868b;
-  font-size: 13px;
+  color: #86868B;
+  font-size: 14px;
   line-height: 1.4;
   margin-bottom: 8px;
   display: -webkit-box;
@@ -197,7 +225,7 @@ body {
   top: 12px;
   right: 12px;
   opacity: 0;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .note-item:hover .note-actions {
@@ -205,20 +233,23 @@ body {
 }
 
 .delete-btn {
-  padding: 4px 8px;
-  background: rgba(255, 59, 48, 0.1);
-  color: #ff3b30;
-  border: 1px solid rgba(255, 59, 48, 0.2);
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 500;
+  background: rgba(255, 59, 48, 0.08);
+  color: #FF3B30;
+  border: 0.5px solid rgba(255, 59, 48, 0.12);
+  border-radius: 8px;
+  padding: 6px 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .delete-btn:hover {
-  background: rgba(255, 59, 48, 0.15);
-  border-color: rgba(255, 59, 48, 0.3);
+  background: rgba(255, 59, 48, 0.12);
+  border-color: rgba(255, 59, 48, 0.2);
+  transform: scale(1.05);
 }
 
 /* 主内容区域 */
@@ -226,9 +257,10 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  position: relative;
 }
 
 .editor-container {
@@ -236,24 +268,25 @@ body {
   display: flex;
   flex-direction: column;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.8);
+  background: transparent;
+  position: relative;
 }
 
-/* 编辑器头部样式 */
 .editor-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.04);
 }
 
 .editor-header h2 {
   margin: 0;
-  font-size: 24px;
-  font-weight: 600;
   color: #1d1d1f;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.022em;
 }
 
 .editor-actions {
@@ -262,104 +295,112 @@ body {
 }
 
 .ai-toggle-btn {
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
+  padding: 10px 16px;
+  background: rgba(88, 86, 214, 0.08);
+  color: #5856D6;
+  border: 0.5px solid rgba(88, 86, 214, 0.12);
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .ai-toggle-btn:hover {
+  background: rgba(88, 86, 214, 0.12);
+  border-color: rgba(88, 86, 214, 0.2);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
+/* Quill 编辑器样式 */
 .ql-container {
-  flex: 1;
-  border: none;
-  background: transparent;
+  border: 0.5px solid rgba(0, 0, 0, 0.04) !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .ql-editor {
-  min-height: 400px;
-  padding: 20px;
-  font-size: 16px;
-  line-height: 1.6;
-  color: #1d1d1f;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 20px !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif !important;
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+  color: #1d1d1f !important;
+  min-height: 400px !important;
+  letter-spacing: -0.022em !important;
 }
 
 .ql-editor p {
-  margin-bottom: 12px;
+  margin-bottom: 16px !important;
 }
 
 .ql-editor h1, .ql-editor h2, .ql-editor h3 {
-  margin: 20px 0 12px 0;
-  font-weight: 600;
-  color: #1d1d1f;
+  font-weight: 700 !important;
+  letter-spacing: -0.022em !important;
+  color: #1d1d1f !important;
 }
 
 .ql-toolbar {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 8px 8px 0 0;
-  background: rgba(255, 255, 255, 0.9);
-  margin-bottom: 0;
+  border: 0.5px solid rgba(0, 0, 0, 0.04) !important;
+  border-bottom: none !important;
+  border-radius: 12px 12px 0 0 !important;
+  background: rgba(248, 248, 248, 0.8) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
 }
 
 .ql-container {
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 12px 12px !important;
 }
 
-/* 空状态样式 */
+/* 空状态 */
 .empty-state {
-  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  height: 100%;
   text-align: center;
   padding: 40px;
-  background: rgba(255, 255, 255, 0.8);
+  color: #86868B;
 }
 
 .empty-state h2 {
-  margin: 0 0 16px 0;
-  font-size: 32px;
-  font-weight: 600;
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  font-weight: 700;
   color: #1d1d1f;
-  letter-spacing: -0.003em;
+  letter-spacing: -0.022em;
 }
 
 .empty-state p {
   margin: 0 0 32px 0;
-  font-size: 18px;
-  color: #86868b;
+  font-size: 16px;
   line-height: 1.5;
+  color: #86868B;
+  max-width: 400px;
 }
 
-/* AI功能预览样式 */
+/* AI 功能预览 */
 .ai-features-preview {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: rgba(255, 255, 255, 0.6);
   border-radius: 16px;
   padding: 24px;
-  color: white;
-  max-width: 400px;
-  margin-top: 20px;
+  margin-top: 24px;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .ai-features-preview h3 {
   margin: 0 0 16px 0;
-  font-size: 20px;
-  font-weight: 600;
-  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #5856D6;
+  letter-spacing: -0.022em;
 }
 
 .ai-features-preview ul {
@@ -370,10 +411,10 @@ body {
 
 .ai-features-preview li {
   padding: 8px 0;
-  font-size: 14px;
-  opacity: 0.9;
+  color: #1d1d1f;
+  font-size: 15px;
   position: relative;
-  padding-left: 20px;
+  padding-left: 24px;
 }
 
 .ai-features-preview li:before {
@@ -381,38 +422,51 @@ body {
   position: absolute;
   left: 0;
   top: 8px;
+  font-size: 14px;
 }
 
 /* 加载状态 */
 .loading {
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: #fbfbfd;
-  font-size: 18px;
-  color: #86868b;
+  padding: 40px;
+}
+
+.loading::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid #007AFF;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* 滚动条样式 */
 .notes-list::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 .notes-list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
+  background: transparent;
 }
 
 .notes-list::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  transition: background 0.2s ease;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
 }
 
 .notes-list::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
+  background-clip: padding-box;
 }
 
 /* 响应式设计 */
@@ -424,7 +478,7 @@ body {
   .sidebar {
     width: 100%;
     height: auto;
-    max-height: 50vh;
+    max-height: 40vh;
   }
 
   .notes-list {
@@ -432,11 +486,11 @@ body {
   }
 
   .editor-container {
-    padding: 20px;
+    padding: 16px;
   }
 
   .sidebar-header {
-    padding: 20px;
+    padding: 16px;
   }
 
   .sidebar-header h1 {
@@ -444,11 +498,11 @@ body {
   }
 }
 
-/* 动画效果 */
+/* 苹果风格动画 */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -457,51 +511,57 @@ body {
 }
 
 .note-item {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 确认对话框样式 */
+/* 苹果风格确认对话框 */
 .confirm-dialog {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-radius: 16px;
+  padding: 32px;
+  min-width: 300px;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
   z-index: 1000;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  animation: dialogSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes dialogSlideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 .confirm-dialog-content {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 32px;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 90%;
   text-align: center;
-  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .confirm-dialog h3 {
   margin: 0 0 12px 0;
   color: #1d1d1f;
   font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.003em;
+  font-weight: 700;
+  letter-spacing: -0.022em;
 }
 
 .confirm-dialog p {
   margin: 0 0 24px 0;
-  color: #86868b;
+  color: #86868B;
   line-height: 1.5;
-  font-size: 15px;
+  font-size: 16px;
+  font-weight: 400;
   letter-spacing: -0.022em;
 }
 
@@ -512,33 +572,34 @@ body {
 }
 
 .confirm-dialog button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   letter-spacing: -0.022em;
+  min-width: 80px;
 }
 
 .confirm-dialog button.confirm {
-  background: #ff3b30;
+  border: none;
+  background: #FF3B30;
   color: white;
 }
 
 .confirm-dialog button.confirm:hover {
-  background: #d70015;
+  background: #D70015;
   transform: translateY(-1px);
 }
 
 .confirm-dialog button.cancel {
-  background: rgba(0, 0, 0, 0.05);
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  background: rgba(0, 0, 0, 0.04);
   color: #1d1d1f;
-  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .confirm-dialog button.cancel:hover {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }

@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { generateWithGemini } = require('./api/ai-gemini');
+const generateWithGemini = require('./api/ai-gemini');
 require('dotenv').config();
 
 const app = express();
@@ -27,7 +27,7 @@ if (process.env.OPENAI_API_KEY) {
 app.post('/api/ai', async (req, res) => {
   if (!openai) {
     return res.status(400).json({ 
-      error: 'OpenAI API 未配置，请使用 Hugging Face 服务或配置 OpenAI API 密钥' 
+      error: 'OpenAI API 未配置，请使用 Gemini 服务或配置 OpenAI API 密钥' 
     });
   }
 
@@ -116,130 +116,7 @@ app.post('/api/ai', async (req, res) => {
   }
 });
 
-// 免费AI API 路由 (Hugging Face)
-app.post('/api/ai-huggingface', async (req, res) => {
-  try {
-    const { prompt, content, type } = req.body;
-
-    if (!content || content.trim().length === 0) {
-      return res.status(400).json({ error: '内容不能为空' });
-    }
-
-    // 使用免费的公开模型 - 不需要API Key
-    const models = [
-      'https://api-inference.huggingface.co/models/microsoft/DialoGPT-small',
-      'https://api-inference.huggingface.co/models/gpt2',
-      'https://api-inference.huggingface.co/models/distilgpt2'
-    ];
-    
-    let lastError = null;
-    
-    for (const modelUrl of models) {
-      try {
-        console.log('尝试模型:', modelUrl);
-        console.log('请求内容:', content.substring(0, 100) + '...');
-        
-        const response = await fetch(modelUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            inputs: content,
-            parameters: {
-              max_length: 100,
-              temperature: 0.7,
-              do_sample: true
-            }
-          }),
-          timeout: 15000 // 15秒超时，免费服务可能较慢
-        });
-
-        console.log('响应状态:', response.status);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('API响应成功');
-          
-          let aiResponse = '';
-
-          // 处理响应
-          if (Array.isArray(data) && data.length > 0) {
-            aiResponse = data[0].summary_text || data[0].generated_text || '无法生成响应';
-          } else if (typeof data === 'string') {
-            aiResponse = data;
-          } else {
-            aiResponse = 'AI 响应格式异常';
-          }
-
-          return res.status(200).json({
-            response: aiResponse,
-            type: type,
-            provider: 'huggingface',
-            model: modelUrl.split('/').pop(),
-            timestamp: new Date().toISOString()
-          });
-        } else {
-          const errorText = await response.text();
-          console.error(`模型 ${modelUrl} 失败: ${response.status} - ${errorText}`);
-          lastError = `模型 ${modelUrl.split('/').pop()} 失败: ${response.status}`;
-        }
-      } catch (error) {
-        console.error(`模型 ${modelUrl} 错误:`, error.message);
-        lastError = error.message;
-      }
-    }
-
-    // 所有模型都失败了，使用智能备用响应
-    console.log('所有模型都失败，使用备用响应');
-    
-    // 智能备用响应 - 基于内容长度和关键词
-    const contentWords = content.split(/\s+/).length;
-    const contentPreview = content.substring(0, 150);
-    
-    const fallbackResponses = {
-      summary: `📝 内容摘要（共${contentWords}词）：\n\n${contentPreview}${content.length > 150 ? '...' : ''}\n\n🔍 主要特点：\n• 内容长度：${contentWords}词\n• 信息密度：${contentWords > 100 ? '丰富' : '简洁'}\n• 建议进一步：${contentWords > 200 ? '精简表达' : '扩展细节'}`,
-      
-      keywords: `🏷️ 智能关键词提取：\n${content.match(/[\u4e00-\u9fa5]{2,}/g)?.slice(0, 8).join(', ') || '内容分析, 信息处理, 知识管理'}\n\n💡 相关概念：学习笔记, 效率工具, 思维整理`,
-      
-      advice: `✍️ 写作分析：\n• 内容长度：${contentWords}词 ${contentWords > 100 ? '(较详细)' : '(可扩展)'}\n• 结构建议：${contentWords > 50 ? '注意段落分层' : '可增加更多细节'}\n• 表达优化：${content.includes('？') || content.includes('?') ? '问题引导良好' : '可适当增加疑问句'}\n• 可读性：${content.includes('、') || content.includes(',') ? '列举清晰' : '建议使用列举'}`,
-      
-      tags: `🏷️ 推荐标签：${content.length > 100 ? '详细笔记' : '简要记录'}, ${content.includes('学习') ? '学习心得' : '知识整理'}, ${content.includes('问题') ? '问题解决' : '思维梳理'}`,
-      
-      topics: `🎯 相关主题推荐：\n• ${content.includes('学习') ? '深度学习方法' : '知识管理系统'}\n• ${content.includes('问题') ? '问题解决框架' : '效率提升技巧'}\n• ${contentWords > 100 ? '复杂概念简化' : '概念深度扩展'}\n• 个人知识库建设`
-    };
-
-    res.status(200).json({
-      response: fallbackResponses[type] || 'AI服务暂时不可用，请稍后重试。',
-      type: type,
-      provider: 'fallback',
-      error: lastError,
-      timestamp: new Date().toISOString()
-    });
-
-  } catch (error) {
-    console.error('Hugging Face API 总体错误:', error);
-    
-    // 最终备用响应
-    const finalFallback = {
-      summary: '这是一个基于内容的智能摘要。由于AI服务暂时不可用，建议手动总结主要观点。',
-      keywords: '关键词提取功能暂时不可用，请手动识别重要概念。',
-      advice: '写作建议功能暂时不可用，建议检查语法和结构。',
-      tags: '标签生成功能暂时不可用，请手动添加标签。',
-      topics: '主题推荐功能暂时不可用，请根据内容自行扩展。'
-    };
-
-    res.status(200).json({
-      response: finalFallback[req.body.type] || 'AI服务暂时不可用，请稍后重试。',
-      type: req.body.type,
-      provider: 'final-fallback',
-      error: error.message,
-      timestamp: new Date().toISOString()
-    });
-  }
-});
-
-// 免费 Gemini AI API 路由
+// Google Gemini AI API 路由
 app.post('/api/ai-gemini', async (req, res) => {
   try {
     const { content, type } = req.body;
@@ -248,15 +125,12 @@ app.post('/api/ai-gemini', async (req, res) => {
       return res.status(400).json({ error: '内容不能为空' });
     }
 
-    console.log(`🤖 Gemini AI 请求 - 类型: ${type}, 内容: ${content.substring(0, 50)}...`);
-
     const result = await generateWithGemini(content, type);
 
     res.status(200).json({
-      response: result.response,
-      type: type,
-      provider: result.provider,
-      model: result.model,
+      result: result.result,
+      type: result.type,
+      source: result.source,
       timestamp: new Date().toISOString()
     });
 
@@ -277,7 +151,6 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     services: {
       openai: !!process.env.OPENAI_API_KEY,
-      huggingface: !!process.env.HUGGINGFACE_API_KEY,
       gemini: !!process.env.GEMINI_API_KEY
     }
   });
@@ -291,8 +164,7 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
   console.log(`🚀 AI 服务器运行在端口 ${port}`);
   console.log(`📝 OpenAI API 端点: http://localhost:${port}/api/ai ${process.env.OPENAI_API_KEY ? '(已配置)' : '(未配置)'}`);
-  console.log(`🆓 Hugging Face API 端点: http://localhost:${port}/api/ai-huggingface ${process.env.HUGGINGFACE_API_KEY ? '(已配置)' : '(未配置)'}`);
-  console.log(`🤖 Google Gemini API 端点: http://localhost:${port}/api/ai-gemini ${process.env.GEMINI_API_KEY ? '(已配置)' : '(智能备用)'}`);
+  console.log(`🤖 Google Gemini API 端点: http://localhost:${port}/api/ai-gemini (智能备用)`);
   console.log(`💡 健康检查: http://localhost:${port}/api/health`);
   console.log(`🌐 前端应用: http://localhost:${port}`);
 }); 
