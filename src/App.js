@@ -317,14 +317,13 @@ function App() {
         )}
       </div>
 
-      {confirmDialog.show && (
-        <ConfirmDialog
-          title="确认删除"
-          message="确定要删除这个笔记吗？此操作无法撤销。"
-          onConfirm={handleDeleteConfirm}
-          onCancel={handleDeleteCancel}
-        />
-      )}
+      <ConfirmDialog
+        isOpen={confirmDialog.show}
+        title="确认删除"
+        message="确定要删除这个笔记吗？此操作无法撤销。"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
 
       <TemplateSelector
         isOpen={showTemplateSelector}
