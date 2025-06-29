@@ -7,6 +7,7 @@ const AIAssistant = ({ content, onApply }) => {
   const [aiResponse, setAiResponse] = useState('');
   const [aiProvider, setAiProvider] = useState('gemini');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
   const aiTabs = [
     { id: 'summary', name: '📝 摘要', description: '智能总结文本要点' },
@@ -93,82 +94,108 @@ const AIAssistant = ({ content, onApply }) => {
   const currentTab = aiTabs.find(tab => tab.id === activeTab);
 
   return (
-    <div className="ai-assistant">
-      <div className="ai-header">
-        <h3>🤖 AI 助手</h3>
-        <p>让 AI 帮你分析和改进内容</p>
-        
-        <div className="ai-provider-selector">
-          <label>AI 引擎:</label>
-          <select 
-            value={aiProvider} 
-            onChange={(e) => setAiProvider(e.target.value)}
-            className="ai-provider-select"
-          >
-            <option value="gemini">🧠 Google Gemini</option>
-            <option value="openai">🚀 OpenAI GPT</option>
-          </select>
-        </div>
-      </div>
-      
-      <div className="ai-tabs">
-        {aiTabs.map(tab => (
-          <button
-            key={tab.id}
-            className={`ai-tab ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.name}
-          </button>
-        ))}
-      </div>
-      
-      <div className="ai-content">
-        <div className="ai-section">
-          {/* 搜索模式显示搜索输入框 */}
-          {activeTab === 'search' && (
-            <div className="search-input-section">
-              <input
-                type="text"
-                className="search-input"
-                placeholder="输入要搜索的词汇、概念或问题..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={handleSearchKeyPress}
-              />
+    <>
+      {/* 侧边栏触发按钮 */}
+      <button 
+        className={`ai-sidebar-trigger ${isOpen ? 'open' : ''}`}
+        onClick={() => setIsOpen(!isOpen)}
+        title="AI助手"
+      >
+        🤖
+      </button>
+
+      {/* 遮罩层 */}
+      {isOpen && <div className="ai-sidebar-overlay" onClick={() => setIsOpen(false)} />}
+
+      {/* AI助手侧边栏 */}
+      <div className={`ai-assistant-sidebar ${isOpen ? 'open' : ''}`}>
+        <div className="ai-assistant">
+          <div className="ai-header">
+            <div className="ai-header-top">
+              <h3>🤖 AI 助手</h3>
+              <button 
+                className="ai-close-btn"
+                onClick={() => setIsOpen(false)}
+                title="关闭"
+              >
+                ✕
+              </button>
             </div>
-          )}
-          
-          <button 
-            className="ai-action-btn"
-            onClick={handleAIRequest}
-            disabled={loading}
-          >
-            {loading ? '处理中...' : 
-             activeTab === 'search' ? '🔍 搜索解释' : 
-             `生成${currentTab?.name.replace(/.*\s/, '')}`}
-          </button>
-          <p className="ai-description">{currentTab?.description}</p>
-        </div>
-        
-        {aiResponse && (
-          <div className="ai-response">
-            <h4>
-              {activeTab === 'search' ? `🔍 "${searchQuery}" 的解释` : 'AI 分析结果'}
-            </h4>
-            <div className="response-content">{aiResponse}</div>
-            <div className="response-actions">
-              <button className="apply-btn" onClick={applyResponse}>
-                应用到笔记
-              </button>
-              <button className="copy-btn" onClick={() => copyToClipboard(aiResponse)}>
-                复制结果
-              </button>
+            <p>让 AI 帮你分析和改进内容</p>
+            
+            <div className="ai-provider-selector">
+              <label>AI 引擎:</label>
+              <select 
+                value={aiProvider} 
+                onChange={(e) => setAiProvider(e.target.value)}
+                className="ai-provider-select"
+              >
+                <option value="gemini">🧠 Google Gemini</option>
+                <option value="openai">🚀 OpenAI GPT</option>
+              </select>
             </div>
           </div>
-        )}
+          
+          <div className="ai-tabs">
+            {aiTabs.map(tab => (
+              <button
+                key={tab.id}
+                className={`ai-tab ${activeTab === tab.id ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.name}
+              </button>
+            ))}
+          </div>
+          
+          <div className="ai-content">
+            <div className="ai-section">
+              {/* 搜索模式显示搜索输入框 */}
+              {activeTab === 'search' && (
+                <div className="search-input-section">
+                  <input
+                    type="text"
+                    className="search-input"
+                    placeholder="输入要搜索的词汇、概念或问题..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyPress={handleSearchKeyPress}
+                  />
+                </div>
+              )}
+              
+              <button 
+                className="ai-action-btn"
+                onClick={handleAIRequest}
+                disabled={loading}
+              >
+                {loading ? '处理中...' : 
+                 activeTab === 'search' ? '🔍 搜索解释' : 
+                 `生成${currentTab?.name.replace(/.*\s/, '')}`}
+              </button>
+              <p className="ai-description">{currentTab?.description}</p>
+            </div>
+            
+            {aiResponse && (
+              <div className="ai-response">
+                <h4>
+                  {activeTab === 'search' ? `🔍 "${searchQuery}" 的解释` : 'AI 分析结果'}
+                </h4>
+                <div className="response-content">{aiResponse}</div>
+                <div className="response-actions">
+                  <button className="apply-btn" onClick={applyResponse}>
+                    应用到笔记
+                  </button>
+                  <button className="copy-btn" onClick={() => copyToClipboard(aiResponse)}>
+                    复制结果
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
