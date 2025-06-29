@@ -40,11 +40,11 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(32px) scale(0.96);
+    transform: scale(0.96);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: scale(1);
   }
 }
 
