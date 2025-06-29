@@ -6,19 +6,32 @@ const AIAssistant = ({ content, onApply }) => {
   const [loading, setLoading] = useState(false);
   const [aiResponse, setAiResponse] = useState('');
   const [aiProvider, setAiProvider] = useState('gemini');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const aiTabs = [
     { id: 'summary', name: '📝 摘要', description: '生成内容摘要' },
     { id: 'keywords', name: '🏷️ 关键词', description: '提取关键词' },
     { id: 'advice', name: '✍️ 建议', description: '写作建议' },
-    { id: 'tags', name: '🏷️ 标签', description: '内容标签' },
+    { id: 'search', name: '🔍 搜索', description: '搜索词汇含义和解释' },
     { id: 'topics', name: '🎯 主题', description: '主题分析' }
   ];
 
   const handleAIRequest = async () => {
-    if (!content || content.trim() === '') {
-      alert('请先输入一些内容');
-      return;
+    let requestContent = content;
+    
+    // 如果是搜索模式，检查搜索词
+    if (activeTab === 'search') {
+      if (!searchQuery || searchQuery.trim() === '') {
+        alert('请输入要搜索的词汇或概念');
+        return;
+      }
+      requestContent = searchQuery.trim();
+    } else {
+      // 其他模式需要笔记内容
+      if (!content || content.trim() === '') {
+        alert('请先输入一些内容');
+        return;
+      }
     }
 
     setLoading(true);
@@ -33,7 +46,7 @@ const AIAssistant = ({ content, onApply }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          content: content,
+          content: requestContent,
           type: activeTab
         })
       });
@@ -61,8 +74,19 @@ const AIAssistant = ({ content, onApply }) => {
 
   const applyResponse = () => {
     if (aiResponse && onApply) {
-      onApply(content + '\n\n---\n\n' + aiResponse);
+      const prefix = activeTab === 'search' ? `\n\n### 🔍 ${searchQuery} 的解释\n\n` : '\n\n---\n\n';
+      onApply(content + prefix + aiResponse);
       setAiResponse('');
+      if (activeTab === 'search') {
+        setSearchQuery('');
+      }
+    }
+  };
+
+  // 处理回车键搜索
+  const handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleAIRequest();
     }
   };
 
@@ -101,19 +125,37 @@ const AIAssistant = ({ content, onApply }) => {
       
       <div className="ai-content">
         <div className="ai-section">
+          {/* 搜索模式显示搜索输入框 */}
+          {activeTab === 'search' && (
+            <div className="search-input-section">
+              <input
+                type="text"
+                className="search-input"
+                placeholder="输入要搜索的词汇、概念或问题..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={handleSearchKeyPress}
+              />
+            </div>
+          )}
+          
           <button 
             className="ai-action-btn"
             onClick={handleAIRequest}
             disabled={loading}
           >
-            {loading ? '处理中...' : `生成${currentTab?.name.replace(/.*\s/, '')}`}
+            {loading ? '处理中...' : 
+             activeTab === 'search' ? '🔍 搜索解释' : 
+             `生成${currentTab?.name.replace(/.*\s/, '')}`}
           </button>
           <p className="ai-description">{currentTab?.description}</p>
         </div>
         
         {aiResponse && (
           <div className="ai-response">
-            <h4>AI 分析结果</h4>
+            <h4>
+              {activeTab === 'search' ? `🔍 "${searchQuery}" 的解释` : 'AI 分析结果'}
+            </h4>
             <div className="response-content">{aiResponse}</div>
             <div className="response-actions">
               <button className="apply-btn" onClick={applyResponse}>

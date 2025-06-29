@@ -60,6 +60,15 @@ async function generateWithOpenAI(content, type) {
       case 'advice':
         prompt = `基于以下内容，给出3条实用的学习建议：\n\n${content}`;
         break;
+      case 'search':
+        prompt = `请详细解释以下词汇、概念或术语的含义，包括：
+1. 基本定义和解释
+2. 相关背景知识
+3. 实际应用或例子
+4. 相关的重要概念
+
+请以清晰易懂的方式回答：${content}`;
+        break;
       case 'expand':
         prompt = `请扩展以下内容，添加更多相关信息和细节：\n\n${content}`;
         break;
@@ -118,6 +127,14 @@ function generateSmartFallback(content, type) {
         result: '1. 定期复习和总结学习内容\n2. 结合实际案例加深理解\n3. 与他人交流分享学习心得',
         source: '智能备用系统',
         type: 'advice'
+      };
+      
+    case 'search':
+      return {
+        success: true,
+        result: `🔍 关于"${content}"的解释：\n\n这是一个需要进一步了解的概念。建议通过多种途径获取更详细的信息，包括：\n\n1. 查阅相关文献和资料\n2. 咨询专业人士或老师\n3. 实践应用加深理解\n\n💡 提示：配置有效的OpenAI API密钥可获得更准确的解释。`,
+        source: '智能备用系统',
+        type: 'search'
       };
       
     case 'expand':
