@@ -218,6 +218,37 @@
   transform: none;
 }
 
+/* 没有当前笔记提示 */
+.no-current-note {
+  background: rgba(255, 255, 255, 0.8);
+  border: 0.5px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  text-align: center;
+  color: #86868B;
+}
+
+.no-current-note-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.no-current-note h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+.no-current-note p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
 /* 我的模板区域 */
 .my-templates-section {
   background: rgba(255, 255, 255, 0.8);

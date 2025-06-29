@@ -32,6 +32,8 @@ const TemplateManager = ({ isOpen, onClose, user, currentNote }) => {
     if (!user) return;
     
     setLoading(true);
+    console.log('TemplateManager 开始加载用户模板，用户ID:', user.id);
+    
     try {
       const { data, error } = await supabase
         .from('note_templates')
@@ -39,10 +41,12 @@ const TemplateManager = ({ isOpen, onClose, user, currentNote }) => {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
+      console.log('TemplateManager 用户模板查询结果:', { data, error, count: data?.length || 0 });
+
       if (error) throw error;
       setTemplates(data || []);
     } catch (error) {
-      console.error('加载模板失败:', error);
+      console.error('TemplateManager 加载模板失败:', error);
       setTemplates([]);
     } finally {
       setLoading(false);
@@ -135,7 +139,7 @@ const TemplateManager = ({ isOpen, onClose, user, currentNote }) => {
 
         <div className="template-manager-content">
           {/* 保存当前笔记为模板 */}
-          {currentNote && (
+          {currentNote ? (
             <div className="save-template-section">
               <h3>📝 保存当前笔记为模板</h3>
               <div className="template-form">
@@ -199,6 +203,12 @@ const TemplateManager = ({ isOpen, onClose, user, currentNote }) => {
                   {saving ? '保存中...' : '💾 保存为模板'}
                 </button>
               </div>
+            </div>
+          ) : (
+            <div className="no-current-note">
+              <div className="no-current-note-icon">📝</div>
+              <h3>没有当前笔记</h3>
+              <p>请先选择或创建一个笔记，然后就可以将其保存为模板了。</p>
             </div>
           )}
 

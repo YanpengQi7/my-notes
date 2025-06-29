@@ -232,6 +232,8 @@
   transform: translateY(-4px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
   border-color: rgba(0, 122, 255, 0.2);
+  z-index: 10;
+  position: relative;
 }
 
 .template-card-header {
