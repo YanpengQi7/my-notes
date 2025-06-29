@@ -214,8 +214,9 @@
 /* 模板网格 */
 .template-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 8px;
 }
 
 .template-card {
@@ -255,7 +256,7 @@
 }
 
 .template-info {
-  flex: 1;
+  display: block;
 }
 
 .template-name {
@@ -276,7 +277,6 @@
 .system-badge,
 .custom-badge {
   position: absolute;
-  top: 0;
   right: 0;
   padding: 4px 8px;
   border-radius: 8px;
@@ -287,12 +287,14 @@
 }
 
 .system-badge {
+  top: 0;
   background: rgba(52, 199, 89, 0.1);
   color: #34C759;
   border: 0.5px solid rgba(52, 199, 89, 0.2);
 }
 
 .custom-badge {
+  top: 30px; /* 向下移动30px，避免与系统标签重叠 */
   background: rgba(255, 149, 0, 0.1);
   color: #FF9500;
   border: 0.5px solid rgba(255, 149, 0, 0.2);

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Provider } from 'react-redux';
+import { store } from './store/index';
 import { supabase } from './supabaseClient';
 import './App.css';
 import Auth from './components/Auth';
@@ -341,4 +343,13 @@ function App() {
   );
 }
 
-export default App;
+// 包装Redux Provider的根组件
+function AppWithRedux() {
+  return (
+    <Provider store={store}>
+      <App />
+    </Provider>
+  );
+}
+
+export default AppWithRedux;

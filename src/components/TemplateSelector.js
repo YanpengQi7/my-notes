@@ -1,12 +1,31 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../supabaseClient';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+  loadAllTemplates, 
+  selectAllTemplates, 
+  selectTemplatesLoading, 
+  selectTemplatesError,
+  selectIsCacheExpired,
+  selectTemplatesByCategory,
+  clearError 
+} from '../store/templatesSlice';
 import './TemplateSelector.css';
 
 const TemplateSelector = ({ isOpen, onClose, onSelectTemplate, user }) => {
-  const [templates, setTemplates] = useState([]);
+  const dispatch = useDispatch();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [previewTemplate, setPreviewTemplate] = useState(null);
-  const [loading, setLoading] = useState(false);
+  
+  // Redux selectors
+  const allTemplates = useSelector(selectAllTemplates);
+  const loading = useSelector(selectTemplatesLoading);
+  const error = useSelector(selectTemplatesError);
+  const isCacheExpired = useSelector(selectIsCacheExpired);
+  
+  // 根据分类过滤模板
+  const filteredTemplates = useSelector(state => 
+    selectTemplatesByCategory(state, selectedCategory, user?.id)
+  );
 
   // 模板分类
   const categories = [
@@ -18,57 +37,26 @@ const TemplateSelector = ({ isOpen, onClose, onSelectTemplate, user }) => {
     { id: 'custom', name: '我的模板', icon: '⭐' }
   ];
 
-  const loadTemplates = useCallback(async () => {
-    setLoading(true);
-    console.log('开始加载模板，用户:', user?.id || '未登录');
-    
-    // 添加测试：简单查询所有模板
-    try {
-      console.log('测试：尝试查询所有模板...');
-      const { data: allData, error: allError } = await supabase
-        .from('note_templates')
-        .select('*');
-      
-      console.log('所有模板查询结果:', { 
-        data: allData, 
-        error: allError,
-        count: allData?.length || 0 
-      });
-      
-      if (allError) {
-        console.error('查询所有模板失败:', allError);
-        setTemplates([]);
-        return;
-      }
-      
-      if (allData && allData.length > 0) {
-        console.log('找到模板，设置到状态中');
-        setTemplates(allData);
-        return;
-      }
-      
-      console.warn('数据库中没有模板数据');
-      setTemplates([]);
-      
-    } catch (error) {
-      console.error('模板加载异常:', error);
-      setTemplates([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-
+  // 使用Redux加载模板
   useEffect(() => {
-    if (isOpen) {
-      loadTemplates();
+    if (isOpen && (allTemplates.length === 0 || isCacheExpired)) {
+      console.log('Redux: 开始加载模板，缓存过期或无数据');
+      dispatch(loadAllTemplates(user?.id));
     }
-  }, [isOpen, loadTemplates]);
+  }, [isOpen, dispatch, user?.id, allTemplates.length, isCacheExpired]);
 
-  const filteredTemplates = templates.filter(template => {
-    if (selectedCategory === 'all') return true;
-    if (selectedCategory === 'custom') return template.user_id === user?.id;
-    return template.category === selectedCategory;
-  });
+  // 清除错误
+  useEffect(() => {
+    if (error) {
+      console.error('Redux: 模板加载错误:', error);
+    }
+  }, [error]);
+
+  // 重新加载模板
+  const handleRetry = () => {
+    dispatch(clearError());
+    dispatch(loadAllTemplates(user?.id));
+  };
 
   const handleTemplateSelect = (template) => {
     onSelectTemplate(template);
@@ -139,7 +127,7 @@ const TemplateSelector = ({ isOpen, onClose, onSelectTemplate, user }) => {
                 </p>
                 <button 
                   className="retry-btn"
-                  onClick={loadTemplates}
+                  onClick={handleRetry}
                 >
                   🔄 重新加载
                 </button>
@@ -154,12 +142,11 @@ const TemplateSelector = ({ isOpen, onClose, onSelectTemplate, user }) => {
                         <h3 className="template-name">{template.name}</h3>
                         <p className="template-description">{template.description}</p>
                       </div>
-                      {template.is_system && (
+                      {template.is_system ? (
                         <span className="system-badge">系统</span>
-                      )}
-                      {template.user_id === user?.id && (
+                      ) : template.user_id === user?.id ? (
                         <span className="custom-badge">我的</span>
-                      )}
+                      ) : null}
                     </div>
                     
                     <div className="template-actions">

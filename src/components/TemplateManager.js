@@ -1,10 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../supabaseClient';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+  createTemplate, 
+  deleteTemplate as deleteTemplateAction, 
+  loadUserTemplates,
+  selectUserTemplates, 
+  selectTemplatesLoading
+} from '../store/templatesSlice';
 import './TemplateManager.css';
 
 const TemplateManager = ({ isOpen, onClose, user, currentNote }) => {
-  const [templates, setTemplates] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const [saving, setSaving] = useState(false);
   const [newTemplate, setNewTemplate] = useState({
     name: '',
@@ -12,6 +18,10 @@ const TemplateManager = ({ isOpen, onClose, user, currentNote }) => {
     category: 'custom',
     icon: '📝'
   });
+
+  // Redux selectors
+  const userTemplates = useSelector(selectUserTemplates);
+  const loading = useSelector(selectTemplatesLoading);
 
   // 图标选项
   const iconOptions = [
@@ -28,36 +38,13 @@ const TemplateManager = ({ isOpen, onClose, user, currentNote }) => {
     { id: 'custom', name: '自定义', icon: '⭐' }
   ];
 
-  const loadUserTemplates = useCallback(async () => {
-    if (!user) return;
-    
-    setLoading(true);
-    console.log('TemplateManager 开始加载用户模板，用户ID:', user.id);
-    
-    try {
-      const { data, error } = await supabase
-        .from('note_templates')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      console.log('TemplateManager 用户模板查询结果:', { data, error, count: data?.length || 0 });
-
-      if (error) throw error;
-      setTemplates(data || []);
-    } catch (error) {
-      console.error('TemplateManager 加载模板失败:', error);
-      setTemplates([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-
+  // 使用Redux加载用户模板
   useEffect(() => {
     if (isOpen && user) {
-      loadUserTemplates();
+      console.log('TemplateManager Redux: 开始加载用户模板，用户ID:', user.id);
+      dispatch(loadUserTemplates(user.id));
     }
-  }, [isOpen, user, loadUserTemplates]);
+  }, [isOpen, user, dispatch]);
 
   const saveAsTemplate = async () => {
     if (!currentNote || !newTemplate.name.trim()) {
@@ -67,29 +54,30 @@ const TemplateManager = ({ isOpen, onClose, user, currentNote }) => {
 
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from('note_templates')
-        .insert([{
-          name: newTemplate.name.trim(),
-          description: newTemplate.description.trim(),
-          content: currentNote.content,
-          category: newTemplate.category,
-          icon: newTemplate.icon,
-          user_id: user.id,
-          is_public: false,
-          is_system: false
-        }]);
+      const templateData = {
+        name: newTemplate.name.trim(),
+        description: newTemplate.description.trim(),
+        content: currentNote.content,
+        category: newTemplate.category,
+        icon: newTemplate.icon,
+        user_id: user.id,
+        is_public: false,
+        is_system: false
+      };
 
-      if (error) throw error;
+      const result = await dispatch(createTemplate(templateData));
       
-      alert('模板保存成功！');
-      setNewTemplate({
-        name: '',
-        description: '',
-        category: 'custom',
-        icon: '📝'
-      });
-      loadUserTemplates();
+      if (result.type === 'templates/create/fulfilled') {
+        alert('模板保存成功！');
+        setNewTemplate({
+          name: '',
+          description: '',
+          category: 'custom',
+          icon: '📝'
+        });
+      } else {
+        throw new Error('保存模板失败');
+      }
     } catch (error) {
       console.error('保存模板失败:', error);
       alert('保存失败，请重试');
@@ -98,20 +86,17 @@ const TemplateManager = ({ isOpen, onClose, user, currentNote }) => {
     }
   };
 
-  const deleteTemplate = async (templateId) => {
+  const handleDeleteTemplate = async (templateId) => {
     if (!window.confirm('确定要删除这个模板吗？')) return;
 
     try {
-      const { error } = await supabase
-        .from('note_templates')
-        .delete()
-        .eq('id', templateId)
-        .eq('user_id', user.id);
-
-      if (error) throw error;
+      const result = await dispatch(deleteTemplateAction({ templateId, userId: user.id }));
       
-      alert('模板删除成功！');
-      loadUserTemplates();
+      if (result.type === 'templates/delete/fulfilled') {
+        alert('模板删除成功！');
+      } else {
+        throw new Error('删除模板失败');
+      }
     } catch (error) {
       console.error('删除模板失败:', error);
       alert('删除失败，请重试');
@@ -220,7 +205,7 @@ const TemplateManager = ({ isOpen, onClose, user, currentNote }) => {
                 <div className="loading-spinner"></div>
                 <p>加载模板中...</p>
               </div>
-            ) : templates.length === 0 ? (
+            ) : userTemplates.length === 0 ? (
               <div className="no-templates">
                 <div className="no-templates-icon">📝</div>
                 <p>还没有自定义模板</p>
@@ -228,7 +213,7 @@ const TemplateManager = ({ isOpen, onClose, user, currentNote }) => {
               </div>
             ) : (
               <div className="templates-grid">
-                {templates.map(template => (
+                {userTemplates.map(template => (
                   <div key={template.id} className="template-item">
                     <div className="template-item-header">
                       <div className="template-icon">{template.icon || '📝'}</div>
@@ -240,7 +225,7 @@ const TemplateManager = ({ isOpen, onClose, user, currentNote }) => {
                       </div>
                       <button
                         className="delete-template-btn"
-                        onClick={() => deleteTemplate(template.id)}
+                        onClick={() => handleDeleteTemplate(template.id)}
                         title="删除模板"
                       >
                         🗑️
