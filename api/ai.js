@@ -1,7 +1,7 @@
 // AI API 服务
 // 需要安装: npm install openai
 
-const { OpenAI } = require('openai');
+import { OpenAI } from 'openai';
 
 // Vercel Serverless 函数处理器
 export default async function handler(req, res) {
