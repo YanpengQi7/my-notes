@@ -15,14 +15,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { query, type } = req.body;
+  const { content, query, type } = req.body;
+  const inputContent = content || query;
 
-  if (!query) {
-    return res.status(400).json({ error: 'Query is required' });
+  if (!inputContent) {
+    return res.status(400).json({ error: 'Content is required' });
   }
 
   try {
-    const result = await generateWithGemini(query, type);
+    const result = await generateWithGemini(inputContent, type);
     res.status(200).json(result);
   } catch (error) {
     console.error('API Error:', error);
