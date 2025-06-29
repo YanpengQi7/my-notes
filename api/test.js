@@ -1,5 +1,5 @@
 // 测试API端点
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   // 添加 CORS 支持
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -15,4 +15,4 @@ module.exports = async (req, res) => {
     environment: process.env.NODE_ENV || 'production',
     method: req.method
   });
-}; 
+} 

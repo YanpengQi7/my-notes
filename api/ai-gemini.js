@@ -85,4 +85,44 @@ function generateSmartFallback(content, type) {
   };
 }
 
-module.exports = { generateWithGemini }; 
+// Vercel API 端点
+export default async function handler(req, res) {
+  // 添加 CORS 支持
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: '只支持 POST 请求' });
+  }
+
+  try {
+    const { content, type } = req.body;
+
+    if (!content || content.trim().length === 0) {
+      return res.status(400).json({ error: '内容不能为空' });
+    }
+
+    const result = await generateWithGemini(content, type);
+
+    res.status(200).json({
+      response: result.response,
+      type: type,
+      provider: result.provider,
+      model: result.model,
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Gemini API 总体错误:', error);
+    
+    res.status(500).json({
+      error: 'AI 服务暂时不可用，请稍后重试',
+      timestamp: new Date().toISOString()
+    });
+  }
+} 

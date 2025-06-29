@@ -1,5 +1,5 @@
-// 健康检查 API 端点
-module.exports = async (req, res) => {
+// 健康检查 API 端点 - Vercel格式
+export default async function handler(req, res) {
   // 添加 CORS 支持
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -20,12 +20,17 @@ module.exports = async (req, res) => {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'production',
-    environmentVariables: envCheck,
+    services: {
+      openai: !!process.env.OPENAI_API_KEY,
+      huggingface: !!process.env.HUGGINGFACE_API_KEY,
+      gemini: !!process.env.GEMINI_API_KEY
+    },
     message: 'AI 服务健康检查通过',
     endpoints: {
       test: '/api/test',
       ai: '/api/ai',
-      aiHuggingFace: '/api/ai-huggingface'
+      'ai-huggingface': '/api/ai-huggingface',
+      'ai-gemini': '/api/ai-gemini'
     }
   });
-}; 
+} 

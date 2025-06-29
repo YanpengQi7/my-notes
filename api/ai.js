@@ -8,7 +8,7 @@ const openai = new OpenAI({
 });
 
 // Vercel 函数导出
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   // 添加 CORS 支持
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -105,4 +105,4 @@ module.exports = async (req, res) => {
       });
     }
   }
-}; 
+} 
