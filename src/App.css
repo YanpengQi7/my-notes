@@ -310,6 +310,27 @@ body {
   transform: translateY(-1px);
 }
 
+.template-manager-btn {
+  padding: 10px 16px;
+  background: rgba(255, 149, 0, 0.08);
+  color: #FF9500;
+  border: 0.5px solid rgba(255, 149, 0, 0.12);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  margin-right: 8px;
+}
+
+.template-manager-btn:hover {
+  background: rgba(255, 149, 0, 0.12);
+  border-color: rgba(255, 149, 0, 0.2);
+  transform: translateY(-1px);
+}
+
 /* Quill 编辑器样式 */
 .ql-container {
   border: 0.5px solid rgba(0, 0, 0, 0.04) !important;

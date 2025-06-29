@@ -4,6 +4,8 @@ import './App.css';
 import Auth from './components/Auth';
 import AIAssistant from './components/AIAssistant';
 import ConfirmDialog from './components/ConfirmDialog';
+import TemplateSelector from './components/TemplateSelector';
+import TemplateManager from './components/TemplateManager';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -16,6 +18,8 @@ function App() {
   const [showAI, setShowAI] = useState(false);
   const [loading, setLoading] = useState(true);
   const [confirmDialog, setConfirmDialog] = useState({ show: false, noteId: null });
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [showTemplateManager, setShowTemplateManager] = useState(false);
 
   useEffect(() => {
     // 获取当前用户
@@ -113,9 +117,13 @@ function App() {
     }
   };
 
-  const createNewNote = async () => {
-    const title = '新笔记';
-    const content = '';
+  const createNewNote = () => {
+    setShowTemplateSelector(true);
+  };
+
+  const createNoteFromTemplate = async (template) => {
+    const title = template ? extractTitle(template.content) : '新笔记';
+    const content = template ? template.content : '';
     await saveNote(null, content, title);
   };
 
@@ -257,6 +265,13 @@ function App() {
               <h2>{currentNote.title}</h2>
               <div className="editor-actions">
                 <button
+                  className="template-manager-btn"
+                  onClick={() => setShowTemplateManager(true)}
+                  title="模板管理"
+                >
+                  🛠️ 模板
+                </button>
+                <button
                   className="ai-toggle-btn"
                   onClick={() => setShowAI(!showAI)}
                 >
@@ -308,6 +323,20 @@ function App() {
           onCancel={handleDeleteCancel}
         />
       )}
+
+      <TemplateSelector
+        isOpen={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+        onSelectTemplate={createNoteFromTemplate}
+        user={user}
+      />
+
+      <TemplateManager
+        isOpen={showTemplateManager}
+        onClose={() => setShowTemplateManager(false)}
+        user={user}
+        currentNote={currentNote}
+      />
     </div>
   );
 }

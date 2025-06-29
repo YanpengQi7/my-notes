@@ -1,0 +1,559 @@
+/* 模板选择器样式 */
+.template-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.template-selector {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  max-width: 1000px;
+  height: 80vh;
+  max-height: 700px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 0.5px solid rgba(255, 255, 255, 0.8);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* 模板选择器头部 */
+.template-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 20px 20px 0 0;
+}
+
+.template-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1d1d1f;
+  letter-spacing: -0.5px;
+}
+
+.template-close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(120, 120, 128, 0.16);
+  border-radius: 50%;
+  color: #1d1d1f;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.template-close-btn:hover {
+  background: rgba(120, 120, 128, 0.24);
+  transform: scale(1.05);
+}
+
+/* 模板内容区域 */
+.template-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* 分类选择 */
+.template-categories {
+  width: 200px;
+  padding: 20px 16px;
+  border-right: 0.5px solid rgba(0, 0, 0, 0.06);
+  background: rgba(248, 248, 248, 0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.category-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 15px;
+  color: #1d1d1f;
+  text-align: left;
+}
+
+.category-btn:hover {
+  background: rgba(0, 122, 255, 0.08);
+  transform: translateX(2px);
+}
+
+.category-btn.active {
+  background: #007AFF;
+  color: white;
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+}
+
+.category-icon {
+  font-size: 18px;
+  width: 20px;
+}
+
+.category-name {
+  font-weight: 500;
+}
+
+/* 模板列表 */
+.template-list {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.template-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: #86868B;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(0, 122, 255, 0.1);
+  border-top: 3px solid #007AFF;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.no-templates {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  text-align: center;
+  color: #86868B;
+}
+
+.no-templates-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.no-templates h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+.no-templates p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  max-width: 400px;
+}
+
+.retry-btn {
+  margin-top: 16px;
+  padding: 10px 20px;
+  background: #007AFF;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-btn:hover {
+  background: #0056CC;
+  transform: translateY(-1px);
+}
+
+/* 模板网格 */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.template-card {
+  background: rgba(255, 255, 255, 0.8);
+  border: 0.5px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.template-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 122, 255, 0.2);
+}
+
+.template-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.template-icon {
+  font-size: 24px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.template-info {
+  flex: 1;
+}
+
+.template-name {
+  margin: 0 0 4px 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #1d1d1f;
+  line-height: 1.3;
+}
+
+.template-description {
+  margin: 0;
+  font-size: 14px;
+  color: #86868B;
+  line-height: 1.4;
+}
+
+.system-badge,
+.custom-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.system-badge {
+  background: rgba(52, 199, 89, 0.1);
+  color: #34C759;
+  border: 0.5px solid rgba(52, 199, 89, 0.2);
+}
+
+.custom-badge {
+  background: rgba(255, 149, 0, 0.1);
+  color: #FF9500;
+  border: 0.5px solid rgba(255, 149, 0, 0.2);
+}
+
+.template-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.preview-btn,
+.use-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preview-btn {
+  background: rgba(120, 120, 128, 0.16);
+  color: #1d1d1f;
+}
+
+.preview-btn:hover {
+  background: rgba(120, 120, 128, 0.24);
+  transform: translateY(-1px);
+}
+
+.use-btn {
+  background: #007AFF;
+  color: white;
+}
+
+.use-btn:hover {
+  background: #0056CC;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+/* 模板底部 */
+.template-footer {
+  padding: 20px 32px;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 0 0 20px 20px;
+}
+
+.blank-note-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.blank-note-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* 模板预览弹窗 */
+.preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  z-index: 1002;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.template-preview {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80vw;
+  max-width: 800px;
+  height: 80vh;
+  max-height: 600px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-radius: 16px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2);
+  z-index: 1003;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+.preview-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+.preview-close-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(120, 120, 128, 0.16);
+  border-radius: 50%;
+  color: #1d1d1f;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preview-close-btn:hover {
+  background: rgba(120, 120, 128, 0.24);
+  transform: scale(1.05);
+}
+
+.preview-content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.preview-html {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+  line-height: 1.6;
+  color: #1d1d1f;
+}
+
+.preview-html h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 24px 0;
+  color: #1d1d1f;
+}
+
+.preview-html h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 32px 0 16px 0;
+  color: #1d1d1f;
+}
+
+.preview-html h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 24px 0 12px 0;
+  color: #1d1d1f;
+}
+
+.preview-html p {
+  margin: 16px 0;
+  line-height: 1.6;
+}
+
+.preview-html ul, .preview-html ol {
+  padding-left: 24px;
+  margin: 16px 0;
+}
+
+.preview-html li {
+  margin: 8px 0;
+}
+
+.preview-html table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.preview-html th,
+.preview-html td {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  text-align: left;
+}
+
+.preview-html th {
+  background: rgba(0, 122, 255, 0.08);
+  font-weight: 600;
+}
+
+.preview-html blockquote {
+  border-left: 4px solid #007AFF;
+  margin: 16px 0;
+  padding: 16px 20px;
+  background: rgba(0, 122, 255, 0.04);
+  border-radius: 8px;
+}
+
+.preview-footer {
+  padding: 20px 24px;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.preview-use-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: #007AFF;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preview-use-btn:hover {
+  background: #0056CC;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .template-selector {
+    width: 95vw;
+    height: 90vh;
+  }
+  
+  .template-content {
+    flex-direction: column;
+  }
+  
+  .template-categories {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 16px;
+    gap: 8px;
+  }
+  
+  .category-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  
+  .template-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .template-preview {
+    width: 95vw;
+    height: 90vh;
+  }
+} 
