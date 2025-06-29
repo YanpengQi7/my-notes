@@ -1,13 +1,9 @@
 // AI API 服务
 // 需要安装: npm install openai
 
-const OpenAI = require('openai');
+const { OpenAI } = require('openai');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-// Vercel 函数导出
+// Vercel Serverless 函数处理器
 export default async function handler(req, res) {
   // 添加 CORS 支持
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -19,90 +15,124 @@ export default async function handler(req, res) {
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: '只支持 POST 请求' });
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const { query, type } = req.body;
+
+  if (!query) {
+    return res.status(400).json({ error: 'Query is required' });
   }
 
   try {
-    const { prompt, content, type } = req.body;
+    const result = await generateWithOpenAI(query, type);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('API Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
 
-    if (!content || content.trim().length === 0) {
-      return res.status(400).json({ error: '内容不能为空' });
+async function generateWithOpenAI(content, type) {
+  try {
+    // 如果没有配置 API Key，使用智能备用响应
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {
+      console.log('🔄 使用智能备用系统 - 如需真正的AI响应，请配置有效的OPENAI_API_KEY');
+      return generateSmartFallback(content, type);
     }
 
-    // 根据不同类型构建不同的提示词
-    let systemPrompt = '';
-    let userPrompt = '';
+    console.log('🤖 正在调用 OpenAI API...');
 
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
+    });
+
+    // 根据类型构建提示词
+    let prompt = '';
     switch (type) {
       case 'summary':
-        systemPrompt = '你是一个专业的文本摘要助手。请为用户提供简洁、准确的摘要，突出主要观点和关键信息。';
-        userPrompt = `请为以下内容生成一个简洁的摘要（200字以内），突出主要观点和关键信息：\n\n${content}`;
+        prompt = `请为以下内容生成一个简洁的摘要（50字以内）：\n\n${content}`;
         break;
-      
       case 'keywords':
-        systemPrompt = '你是一个关键词提取专家。请从文本中提取最重要的关键词或短语。';
-        userPrompt = `请从以下内容中提取5-10个最重要的关键词或短语，用逗号分隔：\n\n${content}`;
+        prompt = `请从以下内容中提取5-8个关键词，用逗号分隔：\n\n${content}`;
         break;
-      
       case 'advice':
-        systemPrompt = '你是一个写作顾问。请分析文本的写作质量并提供改进建议。';
-        userPrompt = `请分析以下内容的写作质量，并提供具体的改进建议，包括结构、表达、逻辑等方面：\n\n${content}`;
+        prompt = `基于以下内容，给出3条实用的学习建议：\n\n${content}`;
         break;
-      
-      case 'tags':
-        systemPrompt = '你是一个标签生成专家。请为内容生成合适的标签用于分类。';
-        userPrompt = `请为以下内容生成3-5个合适的标签，用于分类和搜索：\n\n${content}`;
+      case 'expand':
+        prompt = `请扩展以下内容，添加更多相关信息和细节：\n\n${content}`;
         break;
-      
-      case 'topics':
-        systemPrompt = '你是一个主题推荐专家。请基于内容推荐相关的研究主题。';
-        userPrompt = `基于以下内容，建议3-5个相关的主题或研究方向：\n\n${content}`;
-        break;
-      
       default:
-        systemPrompt = '你是一个智能助手，请根据用户的需求提供帮助。';
-        userPrompt = prompt || content;
+        prompt = `请分析以下内容并提供有用的见解：\n\n${content}`;
     }
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        },
-        {
-          role: "user",
-          content: userPrompt
-        }
-      ],
-      max_tokens: 1000,
-      temperature: 0.7,
+      messages: [{ role: 'user', content: prompt }],
+      model: 'gpt-3.5-turbo',
+      max_tokens: 500,
+      temperature: 0.7
     });
 
-    const response = completion.choices[0].message.content;
-
-    res.status(200).json({
-      response: response,
-      type: type,
-      timestamp: new Date().toISOString()
-    });
+    return {
+      success: true,
+      result: completion.choices[0].message.content,
+      source: 'OpenAI GPT-3.5',
+      type: type
+    };
 
   } catch (error) {
-    console.error('AI API 错误:', error);
-    
-    if (error.code === 'insufficient_quota') {
-      res.status(429).json({ 
-        error: 'API 配额已用完，请稍后重试或联系管理员' 
-      });
-    } else if (error.code === 'invalid_api_key') {
-      res.status(401).json({ 
-        error: 'API 密钥无效，请检查配置' 
-      });
-    } else {
-      res.status(500).json({ 
-        error: 'AI 服务暂时不可用，请稍后重试' 
-      });
-    }
+    console.log('OpenAI API 错误:', error.message);
+    // API 失败时使用智能备用响应
+    return generateSmartFallback(content, type);
+  }
+}
+
+// 智能备用响应函数
+function generateSmartFallback(content, type) {
+  
+  switch (type) {
+    case 'summary':
+      return {
+        success: true,
+        result: `📝 ${content.length > 100 ? content.substring(0, 100) + '...' : content}`,
+        source: '智能备用系统',
+        type: 'summary'
+      };
+      
+    case 'keywords':
+      // 简单的关键词提取逻辑
+      const words = content.split(/[\s，。！？；：、]+/)
+        .filter(word => word.length > 1)
+        .slice(0, 6);
+      return {
+        success: true,
+        result: words.join(', '),
+        source: '智能备用系统',
+        type: 'keywords'
+      };
+      
+    case 'advice':
+      return {
+        success: true,
+        result: '1. 定期复习和总结学习内容\n2. 结合实际案例加深理解\n3. 与他人交流分享学习心得',
+        source: '智能备用系统',
+        type: 'advice'
+      };
+      
+    case 'expand':
+      return {
+        success: true,
+        result: `${content}\n\n💡 建议深入了解相关概念，通过实践加强理解，并关注最新发展动态。`,
+        source: '智能备用系统',
+        type: 'expand'
+      };
+      
+    default:
+      return {
+        success: true,
+        result: `内容分析：这是一段关于${content.substring(0, 20)}...的内容，建议进一步学习和实践。`,
+        source: '智能备用系统',
+        type: type
+      };
   }
 } 

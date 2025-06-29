@@ -1,5 +1,35 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
+// Vercel Serverless 函数处理器
+export default async function handler(req, res) {
+  // 添加 CORS 支持
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const { query, type } = req.body;
+
+  if (!query) {
+    return res.status(400).json({ error: 'Query is required' });
+  }
+
+  try {
+    const result = await generateWithGemini(query, type);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('API Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 // 免费的 Google Gemini API 配置
 // 你可以在 https://aistudio.google.com/ 获取免费 API Key
 // 注意：在函数内动态实例化以确保环境变量正确加载
@@ -105,5 +135,3 @@ function generateSmartFallback(content, type) {
       };
   }
 }
-
-module.exports = generateWithGemini;
