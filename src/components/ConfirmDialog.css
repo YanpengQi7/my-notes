@@ -12,20 +12,19 @@
   z-index: 99999;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  animation: overlayFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes overlayFadeIn {
-  from {
-    opacity: 0;
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
-  }
-  to {
-    opacity: 1;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
+.confirm-dialog-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.confirm-dialog-overlay.hide {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .confirm-dialog {
@@ -38,19 +37,15 @@
   width: 90%;
   box-shadow: 0 32px 80px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06);
   border: 0.5px solid rgba(0, 0, 0, 0.04);
-  animation: dialogSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+  transform: scale(0.92);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes dialogSlideUp {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.confirm-dialog-overlay.show .confirm-dialog {
+  transform: scale(1);
+  opacity: 1;
 }
 
 .confirm-dialog::before {
