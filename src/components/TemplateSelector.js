@@ -19,43 +19,39 @@ const TemplateSelector = ({ isOpen, onClose, onSelectTemplate, user }) => {
   ];
 
   const loadTemplates = useCallback(async () => {
-    if (!user) return;
-    
     setLoading(true);
+    console.log('开始加载模板，用户:', user?.id || '未登录');
+    
+    // 添加测试：简单查询所有模板
     try {
-      // 修复生产环境查询问题 - 使用更安全的查询方式
-      let query = supabase
+      console.log('测试：尝试查询所有模板...');
+      const { data: allData, error: allError } = await supabase
         .from('note_templates')
         .select('*');
       
-      // 构建OR条件：用户自己的模板 OR 公共模板 OR 系统模板
-      if (user?.id) {
-        query = query.or(`user_id.eq.${user.id},is_public.eq.true,is_system.eq.true`);
-      } else {
-        query = query.or('is_public.eq.true,is_system.eq.true');
+      console.log('所有模板查询结果:', { 
+        data: allData, 
+        error: allError,
+        count: allData?.length || 0 
+      });
+      
+      if (allError) {
+        console.error('查询所有模板失败:', allError);
+        setTemplates([]);
+        return;
       }
       
-      const { data, error } = await query
-        .order('is_system', { ascending: false })
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Supabase查询错误:', error);
-        // 如果查询失败，尝试只查询系统模板
-        const fallbackQuery = await supabase
-          .from('note_templates')
-          .select('*')
-          .eq('is_system', true);
-        
-        if (fallbackQuery.error) {
-          throw fallbackQuery.error;
-        }
-        setTemplates(fallbackQuery.data || []);
-      } else {
-        setTemplates(data || []);
+      if (allData && allData.length > 0) {
+        console.log('找到模板，设置到状态中');
+        setTemplates(allData);
+        return;
       }
+      
+      console.warn('数据库中没有模板数据');
+      setTemplates([]);
+      
     } catch (error) {
-      console.error('加载模板失败:', error);
+      console.error('模板加载异常:', error);
       setTemplates([]);
     } finally {
       setLoading(false);
@@ -63,10 +59,10 @@ const TemplateSelector = ({ isOpen, onClose, onSelectTemplate, user }) => {
   }, [user]);
 
   useEffect(() => {
-    if (isOpen && user) {
+    if (isOpen) {
       loadTemplates();
     }
-  }, [isOpen, user, loadTemplates]);
+  }, [isOpen, loadTemplates]);
 
   const filteredTemplates = templates.filter(template => {
     if (selectedCategory === 'all') return true;
