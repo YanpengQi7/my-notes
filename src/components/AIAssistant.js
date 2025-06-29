@@ -9,11 +9,11 @@ const AIAssistant = ({ content, onApply }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const aiTabs = [
-    { id: 'summary', name: '📝 摘要', description: '生成内容摘要' },
-    { id: 'keywords', name: '🏷️ 关键词', description: '提取关键词' },
-    { id: 'advice', name: '✍️ 建议', description: '写作建议' },
-    { id: 'search', name: '🔍 搜索', description: '搜索词汇含义和解释' },
-    { id: 'topics', name: '🎯 主题', description: '主题分析' }
+    { id: 'summary', name: '📝 摘要', description: '智能总结文本要点' },
+    { id: 'keywords', name: '🏷️ 关键词', description: '提取核心关键词' },
+    { id: 'advice', name: '✍️ 建议', description: '获取实用学习建议' },
+    { id: 'search', name: '🔍 搜索', description: '查询词汇含义和解释' },
+    { id: 'topics', name: '🎯 主题', description: '分析内容主题' }
   ];
 
   const handleAIRequest = async () => {

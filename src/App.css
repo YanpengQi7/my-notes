@@ -51,10 +51,6 @@ body {
   font-weight: 700;
   color: #1d1d1f;
   letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .user-info {
