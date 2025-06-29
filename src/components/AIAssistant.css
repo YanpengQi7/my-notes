@@ -36,10 +36,6 @@
   font-weight: 700;
   color: #1d1d1f;
   letter-spacing: -0.022em;
-  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .ai-header p {
@@ -284,7 +280,7 @@
 
 .ai-response h4 {
   margin: 0 0 16px 0;
-  color: #007AFF;
+  color: #1d1d1f;
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.022em;
@@ -293,10 +289,7 @@
   gap: 8px;
 }
 
-.ai-response h4::before {
-  content: '✨';
-  font-size: 16px;
-}
+/* 移除自动添加的emoji，让前端代码控制 */
 
 /* 响应内容 */
 .response-content {
