@@ -14,7 +14,7 @@ const AIAssistant = ({ content, onApplySuggestion, onGenerateSummary, onExtractK
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('summary');
   const [aiResponse, setAiResponse] = useState('');
-  const [aiProvider, setAiProvider] = useState('huggingface'); // 默认使用 Hugging Face
+  const [aiProvider, setAiProvider] = useState('gemini'); // 默认使用 Gemini
 
   // AI功能调用
   const callAI = async (prompt, content) => {
@@ -39,6 +39,18 @@ const AIAssistant = ({ content, onApplySuggestion, onGenerateSummary, onExtractK
           },
           body: JSON.stringify({
             prompt,
+            content: pureText,
+            type: activeTab
+          })
+        });
+      } else if (aiProvider === 'gemini') {
+        // Google Gemini API
+        response = await fetch(`${baseUrl}/api/ai-gemini`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
             content: pureText,
             type: activeTab
           })
@@ -84,8 +96,8 @@ const AIAssistant = ({ content, onApplySuggestion, onGenerateSummary, onExtractK
 
   // 生成摘要
   const handleGenerateSummary = () => {
-    // Hugging Face 只传内容，不拼prompt
-    if (aiProvider === 'huggingface') {
+    // Gemini 和 Hugging Face 只传内容，不拼prompt
+    if (aiProvider === 'gemini' || aiProvider === 'huggingface') {
       callAI('', content);
     } else {
       const prompt = `请为以下内容生成一个简洁的摘要，突出主要观点和关键信息：\n\n${stripHtml(content)}`;
@@ -95,7 +107,7 @@ const AIAssistant = ({ content, onApplySuggestion, onGenerateSummary, onExtractK
 
   // 提取关键词
   const handleExtractKeywords = () => {
-    if (aiProvider === 'huggingface') {
+    if (aiProvider === 'gemini' || aiProvider === 'huggingface') {
       callAI('', content);
     } else {
       const prompt = `请从以下内容中提取5-10个最重要的关键词或短语，用逗号分隔：\n\n${stripHtml(content)}`;
@@ -105,7 +117,7 @@ const AIAssistant = ({ content, onApplySuggestion, onGenerateSummary, onExtractK
 
   // 写作建议
   const handleWritingAdvice = () => {
-    if (aiProvider === 'huggingface') {
+    if (aiProvider === 'gemini' || aiProvider === 'huggingface') {
       callAI('', content);
     } else {
       const prompt = `请分析以下内容的写作质量，并提供改进建议，包括结构、表达、逻辑等方面：\n\n${stripHtml(content)}`;
@@ -115,7 +127,7 @@ const AIAssistant = ({ content, onApplySuggestion, onGenerateSummary, onExtractK
 
   // 智能标签
   const handleGenerateTags = () => {
-    if (aiProvider === 'huggingface') {
+    if (aiProvider === 'gemini' || aiProvider === 'huggingface') {
       callAI('', content);
     } else {
       const prompt = `请为以下内容生成3-5个合适的标签，用于分类和搜索：\n\n${stripHtml(content)}`;
@@ -125,7 +137,7 @@ const AIAssistant = ({ content, onApplySuggestion, onGenerateSummary, onExtractK
 
   // 相关主题建议
   const handleRelatedTopics = () => {
-    if (aiProvider === 'huggingface') {
+    if (aiProvider === 'gemini' || aiProvider === 'huggingface') {
       callAI('', content);
     } else {
       const prompt = `基于以下内容，建议3-5个相关的主题或研究方向：\n\n${stripHtml(content)}`;
@@ -147,7 +159,8 @@ const AIAssistant = ({ content, onApplySuggestion, onGenerateSummary, onExtractK
             onChange={(e) => setAiProvider(e.target.value)}
             className="ai-provider-select"
           >
-            <option value="huggingface">Hugging Face (免费)</option>
+            <option value="gemini">Google Gemini (免费推荐)</option>
+            <option value="huggingface">Hugging Face (免费备用)</option>
             <option value="openai">OpenAI GPT (需要API密钥)</option>
           </select>
         </div>

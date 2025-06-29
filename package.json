@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.50.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -28,7 +29,8 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "server": "node server.js",
-    "dev": "concurrently \"npm run server\" \"PORT=3004 npm start\""
+    "dev": "concurrently \"npm run server\" \"PORT=3004 npm start\"",
+    "vercel-build": "CI=false npm run build"
   },
   "eslintConfig": {
     "extends": [

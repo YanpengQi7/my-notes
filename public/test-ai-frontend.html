@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 功能测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            white-space: pre-wrap;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI 功能测试</h1>
+        <p>测试前端 AI 功能是否正常工作</p>
+
+        <div class="test-section">
+            <h3>测试内容</h3>
+            <textarea id="testContent" placeholder="输入要测试的内容...">
+今天我学习了人工智能的基础知识，包括机器学习、深度学习和自然语言处理等重要概念。通过实际的编程练习，我对这些算法有了更深入的理解。人工智能技术正在快速发展，在医疗、教育、金融等领域都有广泛的应用前景。
+            </textarea>
+        </div>
+
+        <div class="test-section">
+            <h3>AI 服务选择</h3>
+            <select id="aiProvider">
+                <option value="gemini">Google Gemini (推荐)</option>
+                <option value="huggingface">Hugging Face (备用)</option>
+                <option value="openai">OpenAI (需要API Key)</option>
+            </select>
+        </div>
+
+        <div class="test-section">
+            <h3>AI 功能测试</h3>
+            <button onclick="testAI('summary')">📝 测试摘要</button>
+            <button onclick="testAI('keywords')">🏷️ 测试关键词</button>
+            <button onclick="testAI('advice')">✍️ 测试建议</button>
+            <button onclick="testAI('tags')">🏷️ 测试标签</button>
+            <button onclick="testAI('topics')">🎯 测试主题</button>
+            
+            <div id="result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>健康检查</h3>
+            <button onclick="checkHealth()">🔍 检查服务状态</button>
+            <div id="healthResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        async function testAI(type) {
+            const content = document.getElementById('testContent').value;
+            const provider = document.getElementById('aiProvider').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!content.trim()) {
+                alert('请输入测试内容');
+                return;
+            }
+
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '🤖 AI 正在分析中...';
+
+            try {
+                let endpoint;
+                switch (provider) {
+                    case 'gemini':
+                        endpoint = '/api/ai-gemini';
+                        break;
+                    case 'huggingface':
+                        endpoint = '/api/ai-huggingface';
+                        break;
+                    case 'openai':
+                        endpoint = '/api/ai';
+                        break;
+                    default:
+                        endpoint = '/api/ai-gemini';
+                }
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content: content,
+                        type: type
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    resultDiv.innerHTML = `❌ 错误: ${data.error}`;
+                } else {
+                    resultDiv.innerHTML = `✅ ${type.toUpperCase()} 结果 (${data.provider || provider}):\n\n${data.response}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `❌ 请求失败: ${error.message}`;
+            }
+        }
+
+        async function checkHealth() {
+            const resultDiv = document.getElementById('healthResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '🔍 检查中...';
+
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `✅ 服务状态: ${data.status}\n时间: ${data.timestamp}\n\n服务状态:\n- OpenAI: ${data.services.openai ? '✅' : '❌'}\n- Hugging Face: ${data.services.huggingface ? '✅' : '❌'}\n- Gemini: ${data.services.gemini ? '✅' : '❌'}`;
+            } catch (error) {
+                resultDiv.innerHTML = `❌ 健康检查失败: ${error.message}`;
+            }
+        }
+
+        // 页面加载时自动检查健康状态
+        window.onload = function() {
+            checkHealth();
+        };
+    </script>
+</body>
+</html> 
