@@ -201,13 +201,14 @@ function App() {
     return <div className="loading">加载中...</div>;
   }
 
-  if (!user) {
-    return <Auth onAuth={setUser} />;
-  }
-
   return (
-    <div className="App">
-      <div className="sidebar">
+    <>
+      <Auth 
+        onAuth={setUser} 
+        isVisible={!user}
+      />
+      <div className={`App ${user ? 'show' : 'hide'}`}>
+        <div className="sidebar">
         <div className="sidebar-header">
           <h1>📝 智能笔记</h1>
           <div className="user-info">
@@ -338,7 +339,8 @@ function App() {
         user={user}
         currentNote={currentNote}
       />
-    </div>
+      </div>
+    </>
   );
 }
 

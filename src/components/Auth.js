@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import './Auth.css';
 
-const Auth = ({ onAuth }) => {
+const Auth = ({ onAuth, isVisible = true }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,7 +37,7 @@ const Auth = ({ onAuth }) => {
   };
 
   return (
-    <div className="auth-container">
+    <div className={`auth-container ${isVisible ? 'show' : 'hide'}`}>
       <div className="auth-card">
         <h2>{isLogin ? '登录' : '注册'}</h2>
         
