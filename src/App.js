@@ -132,6 +132,8 @@ function App() {
   const deleteNote = async (noteId) => {
     if (!user) return;
 
+    console.log('开始删除笔记:', noteId);
+    
     try {
       const { error } = await supabase
         .from('notes')
@@ -141,6 +143,7 @@ function App() {
 
       if (error) throw error;
 
+      console.log('删除成功，更新笔记列表');
       const updatedNotes = notes.filter(note => note.id !== noteId);
       setNotes(updatedNotes);
       
@@ -183,10 +186,12 @@ function App() {
   );
 
   const showDeleteConfirm = (noteId) => {
+    console.log('显示删除确认对话框:', noteId);
     setConfirmDialog({ show: true, noteId });
   };
 
   const handleDeleteConfirm = () => {
+    console.log('用户确认删除:', confirmDialog.noteId);
     if (confirmDialog.noteId) {
       deleteNote(confirmDialog.noteId);
     }
